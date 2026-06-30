@@ -138,6 +138,7 @@ NPB→MLB移籍事例と2025年換算の参考：
 選手がNPB出身でない・存在しない場合は {"found": false} のみ返すこと。`;
 
   try {
+    // Gemini API呼び出し
     const apiKey = process.env.GEMINI_API_KEY;
     const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${apiKey}`;
 
@@ -148,8 +149,7 @@ NPB→MLB移籍事例と2025年換算の参考：
         contents: [{ parts: [{ text: prompt }] }],
         generationConfig: {
           temperature: 0.3,
-          maxOutputTokens: 8000,
-          responseMimeType: 'application/json',
+          maxOutputTokens: 3000,
         },
       }),
     });
@@ -160,28 +160,9 @@ NPB→MLB移籍事例と2025年換算の参考：
     }
 
     const data = await response.json();
-
-    const finishReason = data.candidates?.[0]?.finishReason;
-    if (finishReason === 'MAX_TOKENS') {
-      throw new Error('Geminiの応答が長すぎて途中で切れました（MAX_TOKENS）。');
-    }
-
     const raw = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
-
-    if (!raw) {
-      throw new Error(
-        `Geminiから空の応答が返されました。finishReason: ${finishReason || '不明'} / promptFeedback: ${JSON.stringify(data.promptFeedback || {})}`
-      );
-    }
-
     const clean = raw.replace(/```json|```/g, '').trim();
-
-    let result;
-    try {
-      result = JSON.parse(clean);
-    } catch (parseErr) {
-      throw new Error(`JSON解析失敗。Geminiの生応答（先頭500文字）: ${clean.slice(0, 500)}`);
-    }
+    const result = JSON.parse(clean);
 
     return res.status(200).json(result);
   } catch (error) {
