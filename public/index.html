@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -7,7 +8,7 @@
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif; background: #f5f5f7; color: #1d1d1f; min-height: 100vh; }
-    .container { max-width: 680px; margin: 0 auto; padding: 2rem 1rem; }
+    .container { max-width: 640px; margin: 0 auto; padding: 2rem 1rem; }
     h1 { font-size: 24px; font-weight: 600; margin-bottom: 4px; }
     .subtitle { font-size: 14px; color: #666; margin-bottom: 1.5rem; }
     .search-box { background: white; border-radius: 16px; padding: 1.25rem; box-shadow: 0 2px 12px rgba(0,0,0,0.08); margin-bottom: 1rem; }
@@ -32,31 +33,26 @@
     .ai-badge { display: inline-block; font-size: 12px; padding: 3px 10px; border-radius: 20px; background: #e8f0fe; color: #1a73e8; margin-bottom: 6px; }
     .player-name { font-size: 22px; font-weight: 600; }
     .player-meta { font-size: 13px; color: #666; margin-top: 3px; }
-    .year-tag { font-size: 12px; padding: 2px 8px; border-radius: 20px; background: #e8f0fe; color: #1a73e8; margin-left: 8px; vertical-align: middle; }
     .conf-badge { font-size: 12px; padding: 4px 12px; border-radius: 20px; white-space: nowrap; flex-shrink: 0; }
     .conf-高 { background: #d4edda; color: #155724; }
     .conf-中 { background: #fff3cd; color: #856404; }
     .conf-低 { background: #f0f0f0; color: #666; }
-    .metrics { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 6px; }
+    .metrics { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 1.25rem; }
     .metric { background: #f5f5f7; border-radius: 12px; padding: .875rem; text-align: center; }
     .metric-val { font-size: 22px; font-weight: 600; }
     .metric-label { font-size: 11px; color: #888; margin-top: 3px; }
-    .inflation-note { font-size: 11px; color: #0071e3; text-align: center; margin-bottom: 14px; }
-    .section-title { font-size: 13px; font-weight: 600; margin: 1rem 0 8px; color: #333; border-left: 3px solid #0071e3; padding-left: 8px; }
-    .stats-grid { display: grid; grid-template-columns: 1fr 1fr; }
-    .stat-row { display: flex; justify-content: space-between; padding: 6px 4px; border-bottom: 1px solid #f0f0f0; font-size: 13px; }
-    .stat-row:last-child { border-bottom: none; }
+    .inflation-note { font-size: 11px; color: #0071e3; text-align: center; margin-top: -6px; margin-bottom: 14px; }
+    .section-title { font-size: 13px; font-weight: 600; margin: 1rem 0 8px; color: #333; }
+    .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
+    .stat-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #f0f0f0; font-size: 13px; }
     .stat-label { color: #666; }
-    .stat-val { font-weight: 600; }
+    .stat-val { font-weight: 500; }
     .bar-item { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
-    .bar-label { font-size: 12px; color: #666; width: 72px; flex-shrink: 0; }
+    .bar-label { font-size: 12px; color: #666; width: 80px; flex-shrink: 0; }
     .bar-track { flex: 1; background: #f0f0f0; border-radius: 4px; height: 8px; overflow: hidden; }
-    .bar-fill { height: 100%; background: #0071e3; border-radius: 4px; transition: width .5s ease; }
+    .bar-fill { height: 100%; background: #0071e3; border-radius: 4px; }
     .bar-score { font-size: 11px; color: #888; width: 28px; text-align: right; }
-    .comp-row { display: flex; justify-content: space-between; align-items: flex-start; padding: 8px 0; border-bottom: 1px solid #f0f0f0; font-size: 13px; }
-    .comp-row:last-child { border-bottom: none; }
-    .comp-adjusted { font-weight: 600; color: #0071e3; }
-    .comp-original { font-size: 11px; color: #aaa; }
+    .comp-box { background: #f5f5f7; border-radius: 10px; padding: 10px 12px; font-size: 13px; margin-top: 8px; }
     .comment-box { background: #f5f5f7; border-radius: 12px; padding: 12px 14px; margin-top: 1rem; font-size: 13px; color: #555; line-height: 1.7; }
     .disclaimer { font-size: 11px; color: #aaa; margin-top: 10px; line-height: 1.6; }
   </style>
@@ -76,13 +72,12 @@
       <input type="number" id="year-input" placeholder="年（任意）" min="1990" max="2025">
       <button class="primary" id="search-btn" onclick="runPrediction()">予測する ↗</button>
     </div>
-    <p class="hint">年を空白にすると直近の成績で予測。例：「坂本勇人」＋「2019」</p>
+    <p class="hint">年を空白にすると直近の成績で予測します。</p>
     <div class="examples">
-      <button class="ex-btn" onclick="set('佐々木朗希','')">佐々木朗希</button>
-      <button class="ex-btn" onclick="set('山本由伸',2022)">山本由伸 2022</button>
-      <button class="ex-btn" onclick="set('坂本勇人',2019)">坂本勇人 2019</button>
-      <button class="ex-btn" onclick="set('近藤健介','')">近藤健介</button>
-      <button class="ex-btn" onclick="set('大谷翔平',2017)">大谷翔平 2017</button>
+      <button class="ex-btn" onclick="set('佐々木朗希', '')">佐々木朗希</button>
+      <button class="ex-btn" onclick="set('山本由伸', 2022)">山本由伸 2022</button>
+      <button class="ex-btn" onclick="set('坂本勇人', 2019)">坂本勇人 2019</button>
+      <button class="ex-btn" onclick="set('近藤健介', '')">近藤健介</button>
     </div>
   </div>
 
@@ -96,10 +91,7 @@
     <div class="player-header">
       <div>
         <span class="ai-badge">AI予測</span>
-        <div>
-          <span class="player-name" id="player-name"></span>
-          <span id="year-tag"></span>
-        </div>
+        <div class="player-name" id="player-name"></div>
         <div class="player-meta" id="player-meta"></div>
       </div>
       <span class="conf-badge" id="conf-badge"></span>
@@ -110,7 +102,7 @@
       <div class="metric"><div class="metric-val" id="res-total">—</div><div class="metric-label">予測総額</div></div>
       <div class="metric"><div class="metric-val" id="res-aav">—</div><div class="metric-label">年平均 (AAV)</div></div>
     </div>
-    <p class="inflation-note">💰 金額はすべて2025年市場相場に換算済み</p>
+    <p class="inflation-note">💰 金額は2025年市場相場に換算済み</p>
 
     <div class="section-title">主要スタッツ</div>
     <div class="stats-grid" id="stats-grid"></div>
@@ -118,14 +110,11 @@
     <div class="section-title">評価</div>
     <div id="bar-wrap"></div>
 
-    <div class="section-title">類似移籍事例</div>
-    <div id="comp-wrap"></div>
+    <div class="section-title">類似事例</div>
+    <div class="comp-box" id="comp-box"></div>
 
     <div class="comment-box" id="ai-comment"></div>
-    <p class="disclaimer">
-      ※ AIが公開情報をもとに分析した参考値です。実際の契約は交渉・市場状況により異なります。<br>
-      ※ 過去事例の換算額はMLB市場成長率を考慮した推定値です。
-    </p>
+    <p class="disclaimer">※ AIが公開情報をもとに分析した参考値です。実際の契約は交渉・市場状況により異なります。</p>
   </div>
 </div>
 
@@ -165,8 +154,8 @@
 
       const j = await res.json();
 
-      if (!res.ok || j.error) {
-        document.getElementById('error').textContent = j.error || 'エラーが発生しました。';
+      if (!res.ok) {
+        document.getElementById('error').textContent = '⚠️ ' + (j.detail || j.error || 'エラーが発生しました。もう一度お試しください。');
         document.getElementById('error').style.display = 'block';
         return;
       }
@@ -177,51 +166,38 @@
         return;
       }
 
-      document.getElementById('player-name').textContent = j.name || playerName;
-      document.getElementById('year-tag').innerHTML = year ? `<span class="year-tag">${year}年時点</span>` : '';
+      document.getElementById('player-name').textContent = j.name;
       document.getElementById('player-meta').textContent = `${j.team || ''} ／ ${j.position || ''} ／ ${j.age || '?'}歳`;
-      document.getElementById('res-years').textContent = (j.yr || '?') + '年';
-      document.getElementById('res-total').textContent = '$' + (j.tot || '?') + 'M';
-      document.getElementById('res-aav').textContent = '$' + (j.aav || '?') + 'M';
+      document.getElementById('res-years').textContent = j.predicted_years + '年';
+      document.getElementById('res-total').textContent = '$' + j.predicted_total_m + 'M';
+      document.getElementById('res-aav').textContent = '$' + j.aav_m + 'M';
 
       const cb = document.getElementById('conf-badge');
-      cb.textContent = '信頼度：' + (j.conf || '中');
-      cb.className = 'conf-badge conf-' + (j.conf || '中');
+      cb.textContent = '信頼度：' + j.confidence;
+      cb.className = 'conf-badge conf-' + j.confidence;
 
-      // 主要スタッツ（sl1〜sl10 / sv1〜sv10）
-      document.getElementById('stats-grid').innerHTML = [1,2,3,4,5,6,7,8,9,10]
-        .filter(i => j[`sl${i}`])
-        .map(i => `<div class="stat-row"><span class="stat-label">${j[`sl${i}`]}</span><span class="stat-val">${j[`sv${i}`] || '—'}</span></div>`)
+      const st = j.stats || {};
+      const statRows = [1,2,3,4,5,6]
+        .filter(i => st[`stat${i}_label`])
+        .map(i => `<div class="stat-row"><span class="stat-label">${st[`stat${i}_label`]}</span><span class="stat-val">${st[`stat${i}_value`]}</span></div>`)
         .join('');
+      document.getElementById('stats-grid').innerHTML = statRows;
 
-      // 評価バー（el1〜el6 / ev1〜ev6）
-      document.getElementById('bar-wrap').innerHTML = [1,2,3,4,5,6]
-        .filter(i => j[`el${i}`])
+      const sc = j.scores || {};
+      const barItems = [1,2,3,4]
+        .filter(i => sc[`label${i}`])
         .map(i => `
           <div class="bar-item">
-            <span class="bar-label">${j[`el${i}`]}</span>
-            <div class="bar-track"><div class="bar-fill" style="width:${j[`ev${i}`] || 0}%"></div></div>
-            <span class="bar-score">${j[`ev${i}`] || 0}</span>
+            <span class="bar-label">${sc[`label${i}`]}</span>
+            <div class="bar-track"><div class="bar-fill" style="width:${sc[`score${i}`] || 0}%"></div></div>
+            <span class="bar-score">${sc[`score${i}`] || 0}</span>
           </div>`)
         .join('');
+      document.getElementById('bar-wrap').innerHTML = barItems;
 
-      // 類似事例（c1n/c2n）
-      const comps = [];
-      if (j.c1n) comps.push({ name: j.c1n, year: j.c1y, years: j.c1yr, adj: j.c1m, orig: j.c1o });
-      if (j.c2n) comps.push({ name: j.c2n, year: j.c2y, years: j.c2yr, adj: j.c2m, orig: j.c2o });
-      document.getElementById('comp-wrap').innerHTML = comps.length
-        ? comps.map(c => `
-            <div class="comp-row">
-              <div>
-                <div style="font-weight:500">${c.name}（${c.year}年）</div>
-                <div style="font-size:12px;color:#888">${c.years}年契約</div>
-              </div>
-              <div style="text-align:right">
-                <div class="comp-adjusted">$${c.adj}M <span style="font-size:11px;font-weight:400">2025換算</span></div>
-                <div class="comp-original">当時 $${c.orig}M</div>
-              </div>
-            </div>`).join('')
-        : '<div style="font-size:13px;color:#aaa;padding:8px 0">該当事例なし</div>';
+      document.getElementById('comp-box').innerHTML = j.similar_case_name
+        ? `<strong>${j.similar_case_name}</strong>　$${j.similar_case_amount}M（2025年換算）`
+        : '該当事例なし';
 
       document.getElementById('ai-comment').textContent = j.comment || '';
       document.getElementById('result').style.display = 'block';
