@@ -1,3 +1,6 @@
+
+
+ 
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -7,28 +10,26 @@
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif; background: #f5f5f7; color: #1d1d1f; min-height: 100vh; }
-    .container { max-width: 720px; margin: 0 auto; padding: 2rem 1rem; }
+    .container { max-width: 680px; margin: 0 auto; padding: 2rem 1rem; }
     h1 { font-size: 24px; font-weight: 600; margin-bottom: 4px; }
     .subtitle { font-size: 14px; color: #666; margin-bottom: 1.5rem; }
     .search-box { background: white; border-radius: 16px; padding: 1.25rem; box-shadow: 0 2px 12px rgba(0,0,0,0.08); margin-bottom: 1rem; }
     .input-row { display: flex; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
-    input { border: 1px solid #ddd; border-radius: 10px; padding: 10px 14px; font-size: 15px; outline: none; transition: border-color .2s; }
+    input { border: 1px solid #ddd; border-radius: 10px; padding: 10px 14px; font-size: 15px; outline: none; }
     input:focus { border-color: #0071e3; }
     #player-input { flex: 2; min-width: 160px; }
     #year-input { flex: 1; min-width: 100px; }
-    button.primary { background: #0071e3; color: white; border: none; border-radius: 10px; padding: 10px 20px; font-size: 15px; cursor: pointer; white-space: nowrap; transition: background .2s; }
-    button.primary:hover { background: #0077ed; }
+    button.primary { background: #0071e3; color: white; border: none; border-radius: 10px; padding: 10px 20px; font-size: 15px; cursor: pointer; white-space: nowrap; }
     button.primary:disabled { background: #999; cursor: not-allowed; }
     .hint { font-size: 12px; color: #888; margin-bottom: 8px; line-height: 1.6; }
     .notice { font-size: 12px; color: #555; background: #f0f7ff; border-left: 3px solid #0071e3; padding: 8px 12px; border-radius: 0 8px 8px 0; margin-bottom: 10px; line-height: 1.6; }
     .examples { display: flex; flex-wrap: wrap; gap: 6px; }
-    .ex-btn { background: #f0f0f0; border: none; border-radius: 8px; padding: 5px 12px; font-size: 13px; cursor: pointer; transition: background .2s; }
-    .ex-btn:hover { background: #e0e0e0; }
+    .ex-btn { background: #f0f0f0; border: none; border-radius: 8px; padding: 5px 12px; font-size: 13px; cursor: pointer; }
     .loading { display: none; align-items: center; gap: 8px; color: #666; font-size: 14px; padding: 1rem 0; }
     .dot { width: 6px; height: 6px; border-radius: 50%; background: #999; animation: pulse 1s infinite; }
     .dot:nth-child(2) { animation-delay: .2s; } .dot:nth-child(3) { animation-delay: .4s; }
     @keyframes pulse { 0%,100%{opacity:.3}50%{opacity:1} }
-    .error { display: none; color: #e53e3e; font-size: 14px; padding: .5rem 0; background: #fff5f5; border-radius: 8px; padding: 10px 14px; margin-top: 8px; }
+    .error { display: none; color: #e53e3e; font-size: 14px; background: #fff5f5; border-radius: 8px; padding: 10px 14px; margin-top: 8px; line-height: 1.6; }
     .result { display: none; background: white; border-radius: 16px; padding: 1.5rem; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
     .player-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.25rem; gap: 12px; }
     .ai-badge { display: inline-block; font-size: 12px; padding: 3px 10px; border-radius: 20px; background: #e8f0fe; color: #1a73e8; margin-bottom: 6px; }
@@ -39,37 +40,29 @@
     .conf-高 { background: #d4edda; color: #155724; }
     .conf-中 { background: #fff3cd; color: #856404; }
     .conf-低 { background: #f0f0f0; color: #666; }
-    .metrics { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 1.25rem; }
+    .metrics { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 6px; }
     .metric { background: #f5f5f7; border-radius: 12px; padding: .875rem; text-align: center; }
     .metric-val { font-size: 22px; font-weight: 600; }
     .metric-label { font-size: 11px; color: #888; margin-top: 3px; }
-    .inflation-note { font-size: 11px; color: #0071e3; text-align: center; margin-top: -6px; margin-bottom: 10px; }
-    .tabs { display: flex; border-bottom: 1px solid #eee; margin-bottom: 1rem; overflow-x: auto; }
-    .tab-btn { background: none; border: none; padding: 8px 14px; font-size: 13px; cursor: pointer; color: #888; border-bottom: 2px solid transparent; white-space: nowrap; }
-    .tab-btn.active { color: #0071e3; border-bottom-color: #0071e3; font-weight: 500; }
-    .tab-content { display: none; }
-    .tab-content.active { display: block; }
+    .inflation-note { font-size: 11px; color: #0071e3; text-align: center; margin-bottom: 14px; }
+    .section-title { font-size: 13px; font-weight: 600; margin: 1rem 0 8px; color: #333; border-left: 3px solid #0071e3; padding-left: 8px; }
     .stats-grid { display: grid; grid-template-columns: 1fr 1fr; }
-    .stat-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid #f0f0f0; font-size: 13px; }
+    .stat-row { display: flex; justify-content: space-between; padding: 6px 4px; border-bottom: 1px solid #f0f0f0; font-size: 13px; }
     .stat-row:last-child { border-bottom: none; }
     .stat-label { color: #666; }
-    .stat-val { font-weight: 500; }
+    .stat-val { font-weight: 600; }
     .bar-item { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
     .bar-label { font-size: 12px; color: #666; width: 72px; flex-shrink: 0; }
     .bar-track { flex: 1; background: #f0f0f0; border-radius: 4px; height: 8px; overflow: hidden; }
-    .bar-fill { height: 100%; background: #0071e3; border-radius: 4px; transition: width .6s ease; }
+    .bar-fill { height: 100%; background: #0071e3; border-radius: 4px; transition: width .5s ease; }
     .bar-score { font-size: 11px; color: #888; width: 28px; text-align: right; }
-    .bar-desc { font-size: 11px; color: #aaa; width: 64px; }
-    .comp-row { padding: 8px 0; border-bottom: 1px solid #f0f0f0; font-size: 13px; }
+    .comp-row { display: flex; justify-content: space-between; align-items: flex-start; padding: 8px 0; border-bottom: 1px solid #f0f0f0; font-size: 13px; }
     .comp-row:last-child { border-bottom: none; }
-    .comp-top { display: flex; justify-content: space-between; align-items: center; }
-    .comp-amounts { display: flex; gap: 12px; align-items: center; margin-top: 3px; flex-wrap: wrap; }
+    .comp-amounts { text-align: right; }
+    .comp-adjusted { font-weight: 600; color: #0071e3; }
     .comp-original { font-size: 11px; color: #aaa; }
-    .comp-adjusted { font-size: 12px; color: #0071e3; font-weight: 500; }
-    .comp-note { font-size: 11px; color: #888; margin-top: 2px; }
     .comment-box { background: #f5f5f7; border-radius: 12px; padding: 12px 14px; margin-top: 1rem; font-size: 13px; color: #555; line-height: 1.7; }
     .disclaimer { font-size: 11px; color: #aaa; margin-top: 10px; line-height: 1.6; }
-    .adv-note { font-size: 11px; color: #aaa; margin-top: 8px; }
   </style>
 </head>
 <body>
@@ -79,22 +72,21 @@
 
   <div class="search-box">
     <div class="notice">
-      📌 <strong>NPB出身選手専用</strong>：日本プロ野球（NPB）出身選手のみ対象です。MLB所属選手や他リーグ選手は予測できません。<br>
-      💰 契約金はすべて<strong>2025年現在の相場</strong>に換算して表示します。
+      📌 NPB出身選手専用です。MLB所属選手は予測できません。<br>
+      💰 契約金はすべて2025年現在の相場に換算して表示します。
     </div>
     <div class="input-row">
       <input type="text" id="player-input" placeholder="NPB選手名（例：佐々木朗希）">
       <input type="number" id="year-input" placeholder="年（任意）" min="1990" max="2025">
       <button class="primary" id="search-btn" onclick="runPrediction()">予測する ↗</button>
     </div>
-    <p class="hint">年を空白にすると直近の成績で予測。例：「坂本勇人」＋「2019」と入力すると2019年時点の成績で予測します。</p>
+    <p class="hint">年を空白にすると直近の成績で予測。例：「坂本勇人」＋「2019」</p>
     <div class="examples">
-      <button class="ex-btn" onclick="set('佐々木朗希', 2023)">佐々木朗希 2023</button>
-      <button class="ex-btn" onclick="set('山本由伸', 2022)">山本由伸 2022</button>
-      <button class="ex-btn" onclick="set('坂本勇人', 2019)">坂本勇人 2019</button>
-      <button class="ex-btn" onclick="set('大谷翔平', 2017)">大谷翔平 2017</button>
-      <button class="ex-btn" onclick="set('吉田正尚', 2021)">吉田正尚 2021</button>
-      <button class="ex-btn" onclick="set('近藤健介', '')">近藤健介</button>
+      <button class="ex-btn" onclick="set('佐々木朗希','')">佐々木朗希</button>
+      <button class="ex-btn" onclick="set('山本由伸',2022)">山本由伸 2022</button>
+      <button class="ex-btn" onclick="set('坂本勇人',2019)">坂本勇人 2019</button>
+      <button class="ex-btn" onclick="set('近藤健介','')">近藤健介</button>
+      <button class="ex-btn" onclick="set('大谷翔平',2017)">大谷翔平 2017</button>
     </div>
   </div>
 
@@ -118,47 +110,25 @@
     </div>
 
     <div class="metrics">
-      <div class="metric">
-        <div class="metric-val" id="res-years">—</div>
-        <div class="metric-label">予測契約年数</div>
-      </div>
-      <div class="metric">
-        <div class="metric-val" id="res-total">—</div>
-        <div class="metric-label">予測総額</div>
-      </div>
-      <div class="metric">
-        <div class="metric-val" id="res-aav">—</div>
-        <div class="metric-label">年平均 (AAV)</div>
-      </div>
+      <div class="metric"><div class="metric-val" id="res-years">—</div><div class="metric-label">予測契約年数</div></div>
+      <div class="metric"><div class="metric-val" id="res-total">—</div><div class="metric-label">予測総額</div></div>
+      <div class="metric"><div class="metric-val" id="res-aav">—</div><div class="metric-label">年平均 (AAV)</div></div>
     </div>
     <p class="inflation-note">💰 金額はすべて2025年市場相場に換算済み</p>
 
-    <div class="tabs">
-      <button class="tab-btn active" onclick="switchTab('main', this)">主要スタッツ</button>
-      <button class="tab-btn" onclick="switchTab('adv', this)">アドバンスト</button>
-      <button class="tab-btn" onclick="switchTab('eval', this)">評価</button>
-      <button class="tab-btn" onclick="switchTab('comp', this)">類似事例</button>
-    </div>
+    <div class="section-title">主要スタッツ</div>
+    <div class="stats-grid" id="stats-grid"></div>
 
-    <div id="tab-main" class="tab-content active">
-      <div class="stats-grid" id="stats-main"></div>
-    </div>
-    <div id="tab-adv" class="tab-content">
-      <div class="stats-grid" id="stats-adv"></div>
-      <p class="adv-note">※ Statcast系指標（xERA・xwOBA・Exit Velo等）はNPB公式集計外のため推定値を含みます。</p>
-    </div>
-    <div id="tab-eval" class="tab-content">
-      <div id="bar-wrap"></div>
-    </div>
-    <div id="tab-comp" class="tab-content">
-      <div id="comps-rows"></div>
-      <p class="adv-note" style="margin-top:8px">※ 類似事例の金額は当時の実際の契約額と2025年換算額を両方表示しています。</p>
-    </div>
+    <div class="section-title">評価</div>
+    <div id="bar-wrap"></div>
+
+    <div class="section-title">類似移籍事例</div>
+    <div id="comp-wrap"></div>
 
     <div class="comment-box" id="ai-comment"></div>
     <p class="disclaimer">
-      ※ AIが公開情報をもとに分析した参考値です。実際の契約はエージェント・球団交渉・市場状況により大きく異なります。<br>
-      ※ 過去の移籍事例の換算額はMLB市場成長率（年約8〜10%）と物価上昇を考慮した推定値です。
+      ※ AIが公開情報をもとに分析した参考値です。実際の契約は交渉・市場状況により異なります。<br>
+      ※ 過去事例の換算額はMLB市場成長率を考慮した推定値です。
     </p>
   </div>
 </div>
@@ -169,22 +139,7 @@
     document.getElementById('year-input').value = year;
   }
 
-  function switchTab(name, btn) {
-    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById('tab-' + name).classList.add('active');
-    btn.classList.add('active');
-  }
-
-  const loadSteps = [
-    '選手データを調査中...',
-    'NPB所属を確認中...',
-    'スタッツを解析中...',
-    'アドバンスト指標を推定中...',
-    '2025年市場に換算中...',
-    'MLB市場と比較中...',
-    '契約を試算中...'
-  ];
+  const loadSteps = ['選手データを調査中...', 'スタッツを解析中...', '2025年市場に換算中...', '契約を試算中...'];
 
   async function runPrediction() {
     const playerName = document.getElementById('player-input').value.trim();
@@ -212,98 +167,70 @@
       document.getElementById('loading').style.display = 'none';
       document.getElementById('search-btn').disabled = false;
 
-      if (!res.ok) throw new Error('API error');
       const j = await res.json();
 
+      if (!res.ok || j.error) {
+        document.getElementById('error').textContent = j.error || 'エラーが発生しました。もう一度お試しください。';
+        document.getElementById('error').style.display = 'block';
+        return;
+      }
+
       if (!j.found) {
-        document.getElementById('error').textContent = `「${playerName}」はNPB出身選手として確認できませんでした。NPBに所属していた選手名を入力してください。`;
+        document.getElementById('error').textContent = `「${playerName}」はNPB出身選手として確認できませんでした。`;
         document.getElementById('error').style.display = 'block';
         return;
       }
 
       // ヘッダー
-      document.getElementById('player-name').textContent = j.name;
+      document.getElementById('player-name').textContent = j.name || playerName;
       document.getElementById('year-tag').innerHTML = year ? `<span class="year-tag">${year}年時点</span>` : '';
-      document.getElementById('player-meta').textContent = `${j.team} ／ ${j.position} ／ ${j.age}歳`;
-      document.getElementById('res-years').textContent = j.predicted_years + '年';
-      document.getElementById('res-total').textContent = '$' + j.predicted_total_m + 'M';
-      document.getElementById('res-aav').textContent = '$' + j.aav_m + 'M';
+      document.getElementById('player-meta').textContent = `${j.team || ''} ／ ${j.position || ''} ／ ${j.age || '?'}歳`;
+      document.getElementById('res-years').textContent = (j.yr || '?') + '年';
+      document.getElementById('res-total').textContent = '$' + (j.tot || '?') + 'M';
+      document.getElementById('res-aav').textContent = '$' + (j.aav || '?') + 'M';
 
       const cb = document.getElementById('conf-badge');
-      cb.textContent = '信頼度：' + j.confidence;
-      cb.className = 'conf-badge conf-' + j.confidence;
+      cb.textContent = '信頼度：' + (j.conf || '中');
+      cb.className = 'conf-badge conf-' + (j.conf || '中');
 
-      // 主要スタッツ
-      const sm = j.stats_main || {};
-      const isPitcher = j.type === '投手';
-      const mainDefs = isPitcher ? [
-        ['wins','勝利数'], ['era','ERA'], ['games','登板数'], ['gs','先発登板'],
-        ['ip','投球回'], ['er','自責点'], ['whip','WHIP'], ['goao','GO/AO'],
-        ['kper9','K/9'], ['war','rWAR'], ['bb','BB'], ['fip','FIP'],
-        ['so','奪三振数'], ['kbb','K/BB']
-      ] : [
-        ['avg','打率'], ['obp','出塁率'], ['slg','長打率'], ['ops','OPS'],
-        ['hr','HR'], ['rbi','打点'], ['sb','盗塁'], ['r','得点'],
-        ['h','安打'], ['doubles','二塁打'], ['triples','三塁打'], ['bb_b','BB'],
-        ['k_b','K'], ['babip','BABIP']
-      ];
-      document.getElementById('stats-main').innerHTML = mainDefs
-        .filter(([k]) => sm[k] && sm[k] !== 'null')
-        .map(([k, l]) => `<div class="stat-row"><span class="stat-label">${l}</span><span class="stat-val">${sm[k]}</span></div>`)
+      // 主要スタッツ（10項目）
+      const s = j.s || {};
+      document.getElementById('stats-grid').innerHTML = [1,2,3,4,5,6,7,8,9,10]
+        .filter(i => s[`${i}l`])
+        .map(i => `<div class="stat-row"><span class="stat-label">${s[`${i}l`]}</span><span class="stat-val">${s[`${i}v`] || '—'}</span></div>`)
         .join('');
 
-      // アドバンスト
-      const sa = j.stats_adv || {};
-      const advDefs = isPitcher ? [
-        ['xera','xERA'], ['xba_p','xBA'], ['fb_velo','Fastball Velo'],
-        ['chase_p','Chase%'], ['whiff_p','Whiff%'], ['kpct_p','K%'],
-        ['bbpct_p','BB%'], ['barrel_p','被Barrel%'], ['hardhit_p','被HardHit%'],
-        ['gb','GB%'], ['extension','Extension'],
-        ['whip_adv','WHIP評価'], ['war_adv_p','WAR評価'], ['fip_adv','FIP評価'], ['kbb_adv','K/BB評価']
-      ] : [
-        ['batting_rv','Batting Run Value'], ['baserunning_rv','Baserunning RV'],
-        ['fielding_rv','Fielding RV'], ['xwoba','xwOBA'], ['xba_b','xBA'], ['xslg','xSLG'],
-        ['exit_velo','Avg Exit Velo'], ['barrel_b','Barrel%'], ['hardhit_b','HardHit%'],
-        ['bat_speed','Bat Speed'], ['squared_up','Squared-Up%'], ['chase_b','Chase%'],
-        ['whiff_b','Whiff%'], ['kpct_b','K%'], ['bbpct_b','BB%'],
-        ['oaa','OAA'], ['arm_value','Arm Value'], ['arm_strength','Arm Strength'],
-        ['sprint_speed','Sprint Speed'], ['war_b','WAR'], ['war_note','WAR評価']
-      ];
-      document.getElementById('stats-adv').innerHTML = advDefs
-        .filter(([k]) => sa[k] && sa[k] !== 'null')
-        .map(([k, l]) => `<div class="stat-row"><span class="stat-label">${l}</span><span class="stat-val" style="font-size:12px;text-align:right;max-width:55%">${sa[k]}</span></div>`)
+      // 評価バー（6項目）
+      const sc = j.sc || {};
+      document.getElementById('bar-wrap').innerHTML = [1,2,3,4,5,6]
+        .filter(i => sc[`l${i}`])
+        .map(i => `
+          <div class="bar-item">
+            <span class="bar-label">${sc[`l${i}`]}</span>
+            <div class="bar-track"><div class="bar-fill" style="width:${sc[i] || 0}%"></div></div>
+            <span class="bar-score">${sc[i] || 0}</span>
+          </div>`)
         .join('');
 
-      // 評価バー
-      const sc = j.scores || {};
-      const labels = sc.labels || [];
-      const descs = sc.descs || [];
-      const vals = [sc.score1,sc.score2,sc.score3,sc.score4,sc.score5,sc.score6,
-                    sc.score7,sc.score8,sc.score9,sc.score10,sc.score11,sc.score12];
-      document.getElementById('bar-wrap').innerHTML = vals.map((v, i) => `
-        <div class="bar-item">
-          <span class="bar-label">${labels[i] || ''}</span>
-          <div class="bar-track"><div class="bar-fill" style="width:${v || 0}%"></div></div>
-          <span class="bar-score">${v || 0}</span>
-          <span class="bar-desc">${descs[i] || ''}</span>
-        </div>`).join('');
+      // 類似事例（2件）
+      const comps = [];
+      if (j.c1n) comps.push({ name: j.c1n, year: j.c1y, years: j.c1yr, adj: j.c1m, orig: j.c1o });
+      if (j.c2n) comps.push({ name: j.c2n, year: j.c2y, years: j.c2yr, adj: j.c2m, orig: j.c2o });
+      document.getElementById('comp-wrap').innerHTML = comps.length
+        ? comps.map(c => `
+            <div class="comp-row">
+              <div>
+                <div style="font-weight:500">${c.name}（${c.year}年）</div>
+                <div style="font-size:12px;color:#888">${c.years}年契約</div>
+              </div>
+              <div class="comp-amounts">
+                <div class="comp-adjusted">$${c.adj}M <span style="font-size:11px;font-weight:400">2025換算</span></div>
+                <div class="comp-original">当時 $${c.orig}M</div>
+              </div>
+            </div>`).join('')
+        : '<div style="font-size:13px;color:#aaa;padding:8px 0">該当事例なし</div>';
 
-      // 類似事例（当時の金額＋2025年換算額を両方表示）
-      document.getElementById('comps-rows').innerHTML = (j.similar_cases || []).map(c => `
-        <div class="comp-row">
-          <div class="comp-top">
-            <span><strong>${c.name}</strong>（${c.year}年移籍）</span>
-            <span style="color:#888;font-size:13px">${c.years}年契約</span>
-          </div>
-          <div class="comp-amounts">
-            <span class="comp-original">当時: $${c.original_m}M</span>
-            <span style="color:#ccc">→</span>
-            <span class="comp-adjusted">2025年換算: $${c.total_m}M</span>
-          </div>
-          <div class="comp-note">${c.note || ''}</div>
-        </div>`).join('');
-
-      document.getElementById('ai-comment').textContent = j.comment;
+      document.getElementById('ai-comment').textContent = j.comment || '';
       document.getElementById('result').style.display = 'block';
 
     } catch (e) {
