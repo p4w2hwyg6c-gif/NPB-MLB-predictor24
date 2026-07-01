@@ -58,7 +58,6 @@
     .bar-score { font-size: 11px; color: #888; width: 28px; text-align: right; }
     .comp-row { display: flex; justify-content: space-between; align-items: flex-start; padding: 8px 0; border-bottom: 1px solid #f0f0f0; font-size: 13px; }
     .comp-row:last-child { border-bottom: none; }
-    .comp-amounts { text-align: right; }
     .comp-adjusted { font-weight: 600; color: #0071e3; }
     .comp-original { font-size: 11px; color: #aaa; }
     .comment-box { background: #f5f5f7; border-radius: 12px; padding: 12px 14px; margin-top: 1rem; font-size: 13px; color: #555; line-height: 1.7; }
@@ -170,7 +169,7 @@
       const j = await res.json();
 
       if (!res.ok || j.error) {
-        document.getElementById('error').textContent = j.error || 'エラーが発生しました。もう一度お試しください。';
+        document.getElementById('error').textContent = j.error || 'エラーが発生しました。';
         document.getElementById('error').style.display = 'block';
         return;
       }
@@ -181,7 +180,6 @@
         return;
       }
 
-      // ヘッダー
       document.getElementById('player-name').textContent = j.name || playerName;
       document.getElementById('year-tag').innerHTML = year ? `<span class="year-tag">${year}年時点</span>` : '';
       document.getElementById('player-meta').textContent = `${j.team || ''} ／ ${j.position || ''} ／ ${j.age || '?'}歳`;
@@ -193,26 +191,24 @@
       cb.textContent = '信頼度：' + (j.conf || '中');
       cb.className = 'conf-badge conf-' + (j.conf || '中');
 
-      // 主要スタッツ（10項目）
-      const s = j.s || {};
+      // 主要スタッツ（sl1〜sl10 / sv1〜sv10）
       document.getElementById('stats-grid').innerHTML = [1,2,3,4,5,6,7,8,9,10]
-        .filter(i => s[`${i}l`])
-        .map(i => `<div class="stat-row"><span class="stat-label">${s[`${i}l`]}</span><span class="stat-val">${s[`${i}v`] || '—'}</span></div>`)
+        .filter(i => j[`sl${i}`])
+        .map(i => `<div class="stat-row"><span class="stat-label">${j[`sl${i}`]}</span><span class="stat-val">${j[`sv${i}`] || '—'}</span></div>`)
         .join('');
 
-      // 評価バー（6項目）
-      const sc = j.sc || {};
+      // 評価バー（el1〜el6 / ev1〜ev6）
       document.getElementById('bar-wrap').innerHTML = [1,2,3,4,5,6]
-        .filter(i => sc[`l${i}`])
+        .filter(i => j[`el${i}`])
         .map(i => `
           <div class="bar-item">
-            <span class="bar-label">${sc[`l${i}`]}</span>
-            <div class="bar-track"><div class="bar-fill" style="width:${sc[i] || 0}%"></div></div>
-            <span class="bar-score">${sc[i] || 0}</span>
+            <span class="bar-label">${j[`el${i}`]}</span>
+            <div class="bar-track"><div class="bar-fill" style="width:${j[`ev${i}`] || 0}%"></div></div>
+            <span class="bar-score">${j[`ev${i}`] || 0}</span>
           </div>`)
         .join('');
 
-      // 類似事例（2件）
+      // 類似事例（c1n/c2n）
       const comps = [];
       if (j.c1n) comps.push({ name: j.c1n, year: j.c1y, years: j.c1yr, adj: j.c1m, orig: j.c1o });
       if (j.c2n) comps.push({ name: j.c2n, year: j.c2y, years: j.c2yr, adj: j.c2m, orig: j.c2o });
@@ -223,7 +219,7 @@
                 <div style="font-weight:500">${c.name}（${c.year}年）</div>
                 <div style="font-size:12px;color:#888">${c.years}年契約</div>
               </div>
-              <div class="comp-amounts">
+              <div style="text-align:right">
                 <div class="comp-adjusted">$${c.adj}M <span style="font-size:11px;font-weight:400">2025換算</span></div>
                 <div class="comp-original">当時 $${c.orig}M</div>
               </div>
